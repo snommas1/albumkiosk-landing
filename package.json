@@ -1,0 +1,9 @@
+{
+  "name": "albumkiosk-landing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/functions": "^3.8.0"
+  }
+}

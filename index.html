@@ -120,6 +120,25 @@
             document.documentElement.dataset.session = sessionId;
         }
 
+        async function markSessionOpened() {
+            if (!sessionId) {
+                return;
+            }
+
+            const response = await fetch("/api/session-opened", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ session: sessionId }),
+                cache: "no-store",
+                keepalive: true,
+            });
+            if (!response.ok) {
+                throw new Error(`Session callback failed with HTTP ${response.status}.`);
+            }
+        }
+
         function redirectToPoster() {
             if (!posterUrl) {
                 statusText.textContent = "Photo link unavailable.";
@@ -138,8 +157,22 @@
             }
         }
 
-        // Leave enough time for the loading state to paint before redirecting.
-        window.setTimeout(redirectToPoster, 650);
+        async function preparePhoto() {
+            const minimumLoadingTime = new Promise((resolve) => {
+                window.setTimeout(resolve, 650);
+            });
+
+            try {
+                await Promise.all([markSessionOpened(), minimumLoadingTime]);
+            } catch (error) {
+                console.error("Unable to record the opened session.", error);
+                await minimumLoadingTime;
+            }
+
+            redirectToPoster();
+        }
+
+        preparePhoto();
     </script>
 </body>
 </html>
