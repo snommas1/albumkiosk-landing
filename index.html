@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your Photo is Ready!</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+        }
+
+        main {
+            width: min(100%, 720px);
+        }
+
+        h1 {
+            margin: 0 0 48px;
+            font-size: clamp(2.5rem, 10vw, 5rem);
+            line-height: 1.05;
+        }
+
+        .download-button {
+            display: block;
+            width: 100%;
+            padding: 24px 32px;
+            border-radius: 16px;
+            background: #e82121;
+            color: #ffffff;
+            font-size: clamp(1.4rem, 5vw, 2rem);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .download-button:hover,
+        .download-button:focus-visible {
+            background: #ff3434;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Your Photo is Ready!</h1>
+        <a class="download-button" href="https://google.com">
+            Download My Photo
+        </a>
+    </main>
+</body>
+</html>
