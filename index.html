@@ -113,6 +113,7 @@
         const parameters = new URLSearchParams(window.location.search);
         const sessionId = parameters.get("session");
         const posterUrl = parameters.get("poster");
+        const stage = parameters.get("stage") === "coupon" ? "coupon" : "poster";
         const statusText = document.querySelector(".status");
 
         // Retain the session on the page for any configured tracking hook.
@@ -130,7 +131,7 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ session: sessionId }),
+                body: JSON.stringify({ session: sessionId, stage }),
                 cache: "no-store",
                 keepalive: true,
             });

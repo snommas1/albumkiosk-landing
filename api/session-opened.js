@@ -2,6 +2,7 @@ import {
     isValidSessionId,
     jsonResponse,
     markSessionOpened,
+    normalizeSessionStage,
 } from "../lib/session-status.js";
 
 export default {
@@ -22,7 +23,8 @@ export default {
             return jsonResponse({ error: "Invalid Session ID" }, 400);
         }
 
-        await markSessionOpened(sessionId);
-        return jsonResponse({ session: sessionId, status: "OPENED" });
+        const stage = normalizeSessionStage(payload?.stage);
+        await markSessionOpened(sessionId, stage);
+        return jsonResponse({ session: sessionId, stage, status: "OPENED" });
     },
 };
