@@ -18,22 +18,22 @@
         }
 
         body {
-            background: #5b0874;
+            background: #000000;
         }
 
         /*
          * Keep the stage at the artwork's native 841:1870 aspect ratio and
-         * scale it with a cover fit. Any necessary crop happens only at the
-         * outer edges, so the artwork and clickable button stay aligned.
+         * scale it with a contain fit. The complete artwork remains visible;
+         * unmatched screen space becomes a small black letterbox area.
          */
         .artwork-stage {
             position: fixed;
             top: 50%;
             left: 50%;
-            width: calc(100vh * 841 / 1870);
-            width: calc(100dvh * 841 / 1870);
-            height: 100vh;
-            height: 100dvh;
+            width: min(100vw, calc(100vh * 841 / 1870));
+            width: min(100%, calc(100dvh * 841 / 1870));
+            height: min(100vh, calc(100vw * 1870 / 841));
+            height: min(100%, calc(100vw * 1870 / 841));
             transform: translate(-50%, -50%);
         }
 
@@ -64,12 +64,6 @@
             outline-offset: -8px;
         }
 
-        @media (min-aspect-ratio: 841 / 1870) {
-            .artwork-stage {
-                width: 100vw;
-                height: calc(100vw * 1870 / 841);
-            }
-        }
     </style>
 </head>
 <body>
@@ -85,5 +79,44 @@
             aria-label="Download My Photo"
         >Download My Photo</a>
     </main>
+    <script>
+        const artworkStage = document.querySelector(".artwork-stage");
+        const parameters = new URLSearchParams(window.location.search);
+        const sessionId = parameters.get("session");
+        const posterUrl = parameters.get("poster");
+        const downloadButton = document.querySelector(".download-button");
+
+        function sizeArtworkToFit() {
+            const scale = Math.min(
+                window.innerWidth / 841,
+                window.innerHeight / 1870
+            );
+            const width = Math.floor(841 * scale * 1000) / 1000;
+            const height = Math.floor(1870 * scale * 1000) / 1000;
+            artworkStage.style.width = `${width}px`;
+            artworkStage.style.height = `${height}px`;
+            artworkStage.style.left = `${Math.max(0, (window.innerWidth - width) / 2)}px`;
+            artworkStage.style.top = `${Math.max(0, (window.innerHeight - height) / 2)}px`;
+            artworkStage.style.transform = "none";
+        }
+
+        sizeArtworkToFit();
+        window.addEventListener("resize", sizeArtworkToFit);
+
+        if (sessionId) {
+            document.documentElement.dataset.session = sessionId;
+        }
+
+        if (posterUrl) {
+            try {
+                const destination = new URL(posterUrl);
+                if (destination.protocol === "https:" || destination.protocol === "http:") {
+                    downloadButton.href = destination.href;
+                }
+            } catch (error) {
+                console.error("Invalid poster URL supplied to landing page.", error);
+            }
+        }
+    </script>
 </body>
 </html>
