@@ -18,6 +18,7 @@
             transition: background-color 180ms ease;
         }
         body.redeemed { background: #b31220; }
+        body.expired { background: #5d1820; }
         body.error { background: #171717; }
         .page {
             width: 100%;
@@ -118,16 +119,24 @@
         }
 
         function render(record) {
-            document.body.className = record.redeemed ? "redeemed" : "";
-            title.textContent = record.redeemed ? "ALREADY REDEEMED" : "VALID";
-            icon.textContent = record.redeemed ? "✕" : "✓";
+            const alreadyRedeemed = record.redeemed === true || record.status === "redeemed";
+            const expired = !alreadyRedeemed && record.status === "expired";
+            document.body.className = alreadyRedeemed ? "redeemed" : (expired ? "expired" : "");
+            title.textContent = alreadyRedeemed ? "ALREADY REDEEMED" : (expired ? "EXPIRED" : "VALID");
+            icon.textContent = alreadyRedeemed || expired ? "✕" : "✓";
             prize.textContent = record.prize;
             session.textContent = record.session;
             details.classList.remove("hidden");
-            message.classList.add("hidden");
-            redeemButton.classList.toggle("hidden", record.redeemed);
-            redeemedDetails.classList.toggle("hidden", !record.redeemed);
-            if (record.redeemed && record.redeemed_time) {
+            if (expired) {
+                const [year, month, day] = record.expiration_date.split("-");
+                message.textContent = `This coupon expired on ${month}/${day}/${year}.`;
+                message.classList.remove("hidden");
+            } else {
+                message.classList.add("hidden");
+            }
+            redeemButton.classList.toggle("hidden", alreadyRedeemed || expired);
+            redeemedDetails.classList.toggle("hidden", !alreadyRedeemed);
+            if (alreadyRedeemed && record.redeemed_time) {
                 redeemedTime.textContent = new Date(record.redeemed_time).toLocaleString();
             }
         }
